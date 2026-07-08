@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 Hours = []
 
 def load_data():
@@ -33,6 +34,13 @@ def show_menu():
 def get_choice():
    return input("Pick an option: ")
 
+def clock():
+   now = datetime.now()
+   date = now.strftime("%b %d, %Y")
+   time = now.strftime("%I :%M %p")
+   session = f"{date} - {time}"
+   return session
+
 
 def log_session():
    Hour = int(input("Hours coded: "))
@@ -45,7 +53,7 @@ def show_sessions():
       print("No hours logged")
    else:
       for index, Hour in enumerate(Hours, start=1):
-         print(f"Session {index}: {Hour} hours.")
+         print(f"Session {index}: {Hour} hours. ")
 
 
 def show_statistics():
