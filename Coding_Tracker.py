@@ -4,7 +4,7 @@ Hours = []
 
 def load_data():
    try:
-      with open("Coding Tracker V2.txt", "r") as file:
+      with open("Coding Tracker Pro.txt", "r") as file:
          for line in file:
             if line.strip():
                Hours.append(int(line.strip()))
@@ -16,14 +16,14 @@ def load_data():
 
 
 def save_data():
-   with open("Coding Tracker V2.txt", "a") as file:
+   with open("Coding Tracker Pro.txt", "a") as file:
       for Hour in Hours:
          file.write(str(Hour) + "\n")
 
 
 def show_menu():
    print("\n--------------")
-   print("--Coding Tracker V2")
+   print("--Coding Tracker Pro")
    print("--------------------")
    print("\n1. Log Session")
    print("2. Show Session")
@@ -44,7 +44,9 @@ def clock():
 
 def log_session():
    Hour = int(input("Hours coded: "))
-   Hours.append(Hour)
+   time = clock()
+   session = f"{time} l {Hour}"
+   Hours.append(session)
    print("Hours logged")
 
 
@@ -52,8 +54,8 @@ def show_sessions():
    if len(Hours) == 0:
       print("No hours logged")
    else:
-      for index, Hour in enumerate(Hours, start=1):
-         print(f"Session {index}: {Hour} hours. ")
+      for index, session in enumerate(Hours, start=1):
+         print(f"Session {index}: {session} Hours coding")
 
 
 def show_statistics():
@@ -86,4 +88,5 @@ def main():
          break
       else:
          print("Invalid option")
-   main()
+
+main()
