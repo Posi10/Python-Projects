@@ -100,7 +100,9 @@ def weeks(session_entries=None):
    current_week_start = None
 
    for entry in session_entries:
-      week_start = entry["datetime"] - timedelta(days=entry["datetime"].weekday()).date()
+      week_start = (
+         entry["datetime"] - timedelta(days=entry["datetime"].weekday())
+      ).date()
       if current_week is None or week_start != current_week_start:
          current_week_start = week_start
          current_week = {
@@ -173,31 +175,51 @@ def Goals():
         break
      else:
         continue
-   Roadmap.append(Goal)
    return Goal
 
 def Goal_list():
-   if len(Roadmap) == 0:
-      print("No goals logged")
-   else:
-      print("\nGoal Roadmap🎯")
-      print(Roadmap[0])
-      for index, Road in enumerate(Roadmap[1:], start=1):
-         print(f"step {index}: {Road}")
+    if len(Roadmap) == 0:
+        print("No goals logged")
+        return
+
+    print("\nGoal Roadmap🎯")
+    print(Roadmap[0])
+
+    for index, Road in enumerate(Roadmap[1:], start=1):
+        print(f"Step {index}: {Road}")
 
 def Check():
-   if len(Roadmap) == 0:
-         print("No goals logged")
-   else:
-      for Road in Roadmap[1:]:
-         Check = input(f"Have you completed {Road}? yes/no: ").lower()
-         if Check == "yes":
-            print(f"{Road}✅")
-            Roadmap[Road] = f"{Roadmap[Road]} ✅"
-         else:
-            continue
+    if len(Roadmap) == 0:
+        print("No goals logged")
+        return
 
+    print("\nGoal Roadmap🎯")
+    print(Roadmap[0])
 
+    for index, Road in enumerate(Roadmap[1:], start=1):
+        print(f"{index}. {Road}")
+
+    while True:
+        try:
+            Choice = int(input("\nWhich step did you complete? (0 to quit): "))
+
+            if Choice == 0:
+                break
+
+            if Choice < 1 or Choice >= len(Roadmap):
+                print("Invalid step.")
+                continue
+
+            if "✅" in Roadmap[Choice]:
+                print("That step is already complete!")
+            else:
+                Roadmap[Choice] += " ✅"
+                print("Step marked complete!")
+
+        except ValueError:
+            print("Please enter a number.")
+
+    save_roadmap()
 
 def delete():
     if len(Roadmap) == 0:
@@ -208,9 +230,10 @@ def delete():
         Delete = input("Are you sure you want to delete the last item?: ").lower()
         if Delete == "yes":
             print("Deleting last item...")
-            save_data
+            save_data()
             time.sleep(3)
             del Roadmap[-1]
+            save_roadmap()
             
         else:
             time.sleep(2)
