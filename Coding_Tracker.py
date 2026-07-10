@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 Hours = []
 Session_Entries = []
 Roadmap = []
-Roadmap_name = None
 
 def load_data():
    try:
@@ -45,7 +44,7 @@ def save_data():
 
 def load_roadmap():
    try:
-      with open(f"{Roadmap_name} Roadmap.txt", "r") as file:
+      with open(f"Roadmap.txt", "r") as file:
          for line in file:
           Roadmap.append(line.strip())
    except:
@@ -54,7 +53,7 @@ def load_roadmap():
 def save_roadmap():
    print("Saving Data...")
    time.sleep(3)
-   with open(f"{Roadmap_name} Roadmap.txt", "w") as file:
+   with open(f"Roadmap.txt", "w") as file:
            for Road in Roadmap:
                file.write(Road + "\n")
 
@@ -71,7 +70,8 @@ def show_menu():
    print("3. Show statistics")
    print("4. Log Goals")
    print("5. See Goals")
-   print("6. Quit")
+   print("6. Check completed Goals")
+   print("7. Quit")
 
 
 def get_choice():
@@ -131,6 +131,7 @@ def show_sessions():
    if len(Session_Entries) == 0:
       print("No hours logged")
    else:
+      print("Sessions💻")
       for week_group in weeks():
          print(week_group["label"])
          for index, session in enumerate(week_group["sessions"], start=1):
@@ -141,6 +142,7 @@ def show_statistics():
    if len(Hours) == 0:
       print("No hours logged")
    else:
+      print("\nStatistics📊")
       Average = sum(Hours) / len(Hours)
       Total = sum(Hours)
       Highest = max(Hours)
@@ -151,9 +153,7 @@ def show_statistics():
       print(f"the least you coded in a session was {Least} hours.")
 
 def Goals():
-   global Roadmap_name
    Goal = input("What is your goal?: ")
-   Roadmap_name = Goal
    Step = input("What is the first step to that goal?: ")
    Roadmap.append(f"Goal: {Goal}")
    Roadmap.append(Step)
@@ -162,7 +162,14 @@ def Goals():
      Roadmap.append(Map)
      quit = input("Press q to quit, press any other key to add more steps: ").lower()
      if quit == "q":
+        print("Saving Roadmap...")
+        time.sleep(3)
         print("Go to option 5 to see your list")
+        time.sleep(2)
+        Roadmap.append(Goal)
+        save_roadmap()
+        print("Roadmap Saved")
+        time.sleep(2)
         break
      else:
         continue
@@ -173,14 +180,41 @@ def Goal_list():
    if len(Roadmap) == 0:
       print("No goals logged")
    else:
-    for index, Road in enumerate(Roadmap, start=1):
-      print(f"step {index}: {Road}")
-      
-        
+      print("\nGoal Roadmap🎯")
+      print(Roadmap[0])
+      for index, Road in enumerate(Roadmap[1:], start=1):
+         print(f"step {index}: {Road}")
+
+def Check():
+   if len(Roadmap) == 0:
+         print("No goals logged")
+   else:
+      for Road in Roadmap[1:]:
+         Check = input(f"Have you completed {Road}? yes/no: ").lower()
+         if Check == "yes":
+            print(f"{Road}✅")
+            Roadmap[Road] = f"{Roadmap[Road]} ✅"
+         else:
+            continue
 
 
 
-   
+def delete():
+    if len(Roadmap) == 0:
+         time.sleep(3)
+         print("No projects logged")
+    else:
+        time.sleep(2)
+        Delete = input("Are you sure you want to delete the last item?: ").lower()
+        if Delete == "yes":
+            print("Deleting last item...")
+            save_data
+            time.sleep(3)
+            del Roadmap[-1]
+            
+        else:
+            time.sleep(2)
+            print("Ok!")
 
 def main():
    load_data()
@@ -201,6 +235,10 @@ def main():
          Goal_list()
 
       elif Choice == "6":
+         Check()
+
+
+      elif Choice == "7":
          print("Goodbye")
          save_data()
          if len(Roadmap) == 0:
