@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 Hours = []
 Session_Entries = []
 Roadmap = []
-
 def load_data():
    try:
       with open("Coding Tracker Pro.txt", "r", encoding="utf-8") as file:
@@ -43,22 +42,34 @@ def save_data():
 
          file.write(f"{timestamp} | {display} | {hours}\n")
 
+def clean_roadmap_item(item):
+   cleaned = item.strip()
+   while True:
+      if cleaned.startswith("Step ") and ": " in cleaned:
+         prefix, _, remainder = cleaned.partition(": ")
+         if prefix.split()[-1].isdigit():
+            cleaned = remainder
+            continue
+      return cleaned
+
+
 def load_roadmap():
    try:
-      with open(f"Roadmap.txt", "r") as file:
+      with open("Roadmap.txt", "r", encoding="utf-8") as file:
          for line in file:
-          Roadmap.append(line.strip())
-   except:
+            item = clean_roadmap_item(line)
+            if item:
+               Roadmap.append(item)
+   except FileNotFoundError:
       print("You can also pick option 4 to start creating goals!")
+
 
 def save_roadmap():
    print("Saving Data...")
    time.sleep(3)
    with open("Roadmap.txt", "w", encoding="utf-8") as file:
-      if Roadmap:
-         file.write(f"{Roadmap[0]}\n")
-         for index, road in enumerate(Roadmap[1:], start=1):
-            file.write(f"Step {index}: {road}\n")
+      for road in Roadmap:
+         file.write(f"{road}\n")
            
 
 
@@ -75,7 +86,8 @@ def show_menu():
    print("4. Log Goals")
    print("5. See Goals")
    print("6. Check completed Goals")
-   print("7. Quit")
+   print("7. Progress bar")
+   print("8. Quit")
 
 
 def get_choice():
@@ -159,15 +171,15 @@ def show_statistics():
       print(f"the least you coded in a session was {Least} hours.")
 
 def Goals():
-   Goal = input("What is your goal?: ")
-   Step = input("What is the first step to that goal?: ")
-   Roadmap.append(f"Goal: {Goal}")
-   Roadmap.append(Step)
-   while True:
-     Map = input("next step?: ")
+   if len(Roadmap) == 0:
+    Goal = input("What is your goal?(0 to quit): ")
+    Step = input("What is the first step to that goal?(0 to quit): ")
+    Roadmap.append(f"Goal: {Goal}")
+    Roadmap.append(Step)
+    while True:
+     Map = input("next step?(0 to quit): ")
      Roadmap.append(Map)
-     quit = input("Press q to quit, press any other key to add more steps: ").lower()
-     if quit == "q":
+     if Map or Step or Goal == "0":
         print("Saving Roadmap...")
         time.sleep(3)
         print("Go to option 5 to see your list")
@@ -178,7 +190,18 @@ def Goals():
         break
      else:
         continue
-   return Goal
+    return Goal
+   else:
+      print("\nGoals🎯")
+      Go = input("Do you want to add more goals?(0 to quit)").lower()
+      if Go == "yes":
+         while True:
+          Map = input("next step?(0 to quit): ")
+          Roadmap.append(Map)
+          if Map == "0":
+             time.sleep(3)
+             break
+             
 
 def Goal_list():
     if len(Roadmap) == 0:
@@ -187,9 +210,59 @@ def Goal_list():
 
     print("\nGoal Roadmap🎯")
     if Roadmap:
-      print(f"{Roadmap[0]}\n")
+      print(Roadmap[0])
       for index, road in enumerate(Roadmap[1:], start=1):
-         print(f"Step {index}: {road}\n")
+         print(f"{index}. {road}")
+
+def Progress_bar():
+   if len(Roadmap) == 0:
+      print("No goals logged")
+   else:
+      Check = [road for road in Roadmap if "✅" in road]
+      Complete = "🟩"
+      Complete_20 = "🟩"*2
+      Complete_30 = "🟩"*3
+      Complete_40 = "🟩"*4
+      Complete_50 = "🟩"*5
+      Complete_60 = "🟩"*6
+      Complete_70 = "🟩"*7
+      Complete_80 = "🟩"*8
+      Complete_90 = "🟩"*9
+      Complete_100 = "🟩"*10
+      Completed = len(Check)
+      Total = len(Roadmap)
+      Percentage = Completed / Total * 100
+      if Percentage >= 100:
+         Bar = Complete_100
+      elif Percentage >= 90:
+         Bar = f"{Complete_90}⬜"
+      elif Percentage >= 80:
+         Bar = f"{Complete_80}⬜⬜"
+      elif Percentage >= 70:
+         Bar = f"{Complete_70}⬜⬜⬜"
+      elif Percentage >= 60:
+         Bar = f"{Complete_60}⬜⬜⬜⬜"
+      elif Percentage >= 50:
+         Bar = f"{Complete_50}⬜⬜⬜⬜⬜"
+      elif Percentage >= 40:
+         Bar = f"{Complete_40}⬜⬜⬜⬜⬜⬜"
+      elif Percentage >= 30:
+         Bar = f"{Complete_30}⬜⬜⬜⬜⬜⬜⬜"
+      elif Percentage >= 20:
+         Bar = f"{Complete_20}⬜⬜⬜⬜⬜⬜⬜⬜"
+      elif Percentage >= 10:
+         Bar = f"{Complete}⬜⬜⬜⬜⬜⬜⬜⬜⬜"
+      else:
+         Bar = "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜"
+      for Road in Roadmap:
+         if "✅" in Road:
+            Complete + Bar
+         else:
+            None
+   Progress = Bar
+   print(f"{Progress}  Goal {Percentage:.2f}% completed")
+
+
 
 
 def Check():
@@ -263,9 +336,11 @@ def main():
 
       elif Choice == "6":
          Check()
-
-
       elif Choice == "7":
+         Progress_bar()
+      elif Choice == "8":
+         delete()
+      elif Choice == "9":
          print("Goodbye")
          save_data()
          if len(Roadmap) == 0:
