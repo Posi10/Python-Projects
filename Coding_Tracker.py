@@ -6,7 +6,7 @@ Roadmap = []
 
 def load_data():
    try:
-      with open("Coding Tracker Pro.txt", "r") as file:
+      with open("Coding Tracker Pro.txt", "r", encoding="utf-8") as file:
          for line in file:
             if line.strip():
                data = line.strip().split(" | ")
@@ -16,6 +16,7 @@ def load_data():
                      timestamp = datetime.strptime(timestamp_text, "%Y-%m-%d %H:%M:%S")
                   except ValueError:
                      timestamp = datetime.now()
+
                   session = {
                      "text": f"{display_text} l {hours_text}",
                      "datetime": timestamp,
@@ -34,7 +35,7 @@ def load_data():
 
 
 def save_data():
-   with open("Coding Tracker Pro.txt", "w") as file:
+   with open("Coding Tracker Pro.txt", "w", encoding="utf-8") as file:
       for session in Session_Entries:
          timestamp = session["datetime"].strftime("%Y-%m-%d %H:%M:%S")
          display = session["text"].split(" l ")[0]
@@ -53,9 +54,12 @@ def load_roadmap():
 def save_roadmap():
    print("Saving Data...")
    time.sleep(3)
-   with open(f"Roadmap.txt", "w") as file:
-           for Road in Roadmap:
-               file.write(Road + "\n")
+   with open("Roadmap.txt", "w", encoding="utf-8") as file:
+      if Roadmap:
+         file.write(f"{Roadmap[0]}\n")
+         for index, road in enumerate(Roadmap[1:], start=1):
+            file.write(f"Step {index}: {road}\n")
+           
 
 
 
@@ -168,7 +172,6 @@ def Goals():
         time.sleep(3)
         print("Go to option 5 to see your list")
         time.sleep(2)
-        Roadmap.append(Goal)
         save_roadmap()
         print("Roadmap Saved")
         time.sleep(2)
@@ -183,10 +186,11 @@ def Goal_list():
         return
 
     print("\nGoal Roadmap🎯")
-    print(Roadmap[0])
+    if Roadmap:
+      print(f"{Roadmap[0]}\n")
+      for index, road in enumerate(Roadmap[1:], start=1):
+         print(f"Step {index}: {road}\n")
 
-    for index, Road in enumerate(Roadmap[1:], start=1):
-        print(f"Step {index}: {Road}")
 
 def Check():
     if len(Roadmap) == 0:
