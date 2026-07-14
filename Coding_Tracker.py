@@ -278,44 +278,44 @@ def Progress_bar():
 
 
 def Check():
-    if len(Roadmap) == 0:
+   if len(Roadmap) == 0:
             print("No goals logged")
             return
-    print("\nGoal Roadmap🎯")
-    print(Roadmap[0])
+   print("\nGoal Roadmap🎯")
+   print(Roadmap[0])
     
-for index, Road in enumerate(Roadmap[1:], start=1):
+   for index, Road in enumerate(Roadmap[1:], start=1):
             print(f"{index}. {Road}")
     
-while True:
+   while True:
             try:
-                Choice = int(input("\nWhich step did you complete? (0 to quit): "))
+                Option = int(input("\nWhich step did you complete? (0 to quit): "))
     
-                if Choice == 0:
+                if Option == 0:
                     break
     
-                if Choice < 1 or Choice >= len(Roadmap):
+                if Option < 1 or Option >= len(Roadmap):
                     print("Invalid step.")
                     continue
     
-                if "✅" in Roadmap[Choice]:
+                if "✅" in Roadmap[Option]:
                     print("That step is already complete!")
                 else:
-                    Roadmap[Choice] += " ✅"
+                    Roadmap[Option] += " ✅"
                     print("Step marked complete!")
     
             except ValueError:
                 print("Please enter a number.")
 def delete():
-    Choice = int(input("Which list do you want to delete items from list 1/2:  "))
-    if Choice == 1:
+   Option = int(input("Which list do you want to delete items from list 1/2:  "))
+   if Option == 1:
      if len(Hours) == 0:
          time.sleep(3)
          print("No projects logged")
          return
-    else:
+     else:
         time.sleep(2)
-        print("\nSessions")
+        print("\nSessions💻")
         for index, Hour in enumerate(Hours, start=1):
            print(f"{index}. {Hour}")
         while True:
@@ -339,37 +339,39 @@ def delete():
 
          except ValueError:
             print("Please enter a number.")
-    if Choice == 2:
+   elif Option == 2:
        if len(Hours) == 0:
                 time.sleep(3)
                 print("No projects logged")
                 return
        else:
-               time.sleep(2)
-               print("\nGoal Roadmap🎯")
-               for index, road in enumerate(Roadmap, start=1):
+         time.sleep(2)
+         print("\nGoal Roadmap🎯")
+         for index, road in enumerate(Roadmap, start=1):
                   print(f"{index}. {road}")
-               while True:
-                try:
-                   Delete = int(input("\nWhich step would you like to delete (0 to quit): "))
+         while True:
+            try:
+              Delete = int(input("\nWhich step would you like to delete (0 to quit): "))
        
-                   if Delete == 0:
-                       print("Leaving...")
-                       time.sleep(3)
-                       break
+              if Delete == 0:
+               print("Leaving...")
+               time.sleep(3)
+               break
        
-                   if Delete < 1 or Delete > len(Roadmap):
+              elif Delete < 1 or Delete > len(Roadmap):
                        print("Invalid step.")
                        continue
        
-                   removed_item = Roadmap.pop(Delete - 1)
-                   print(f"Deleting: {removed_item}")
-                   time.sleep(3)
-                   save_roadmap()
-                   break
+              removed_item = Roadmap.pop(Delete - 1)
+              print(f"Deleting: {removed_item}")
+              time.sleep(3)
+              save_roadmap()
+              break
+            except ValueError:
+                           print("Please enter a number.")
+         
+
        
-                except ValueError:
-                   print("Please enter a number.")
 
 
             
@@ -389,10 +391,8 @@ def main():
          show_statistics()
       elif Choice == "4":
          Goals()
-
       elif Choice == "5":
          Goal_list()
-
       elif Choice == "6":
          Check()
       elif Choice == "7":
