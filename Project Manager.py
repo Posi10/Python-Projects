@@ -77,36 +77,34 @@ def View_Projects():
     
 
 def Mark_complete():
-    while True:
-     if len(Projects) == 0:
-            print("Loading Projects...")
-            time.sleep(3)
-            print("No Projects logged")
-     else:
-        print("Loading Projects...")
-        time.sleep(3)
-        print("\nProjects📁")
-        for index, Project in enumerate(Projects, start=1):
-            print(f"Project {index}: {Project}")
+    if len(Projects) == 0:
+            print("No projects logged")
+    else:
+        print("Projects📁")
+        for index, Pro in enumerate(Projects, start=1):
+            print(f"Project {index}: {Pro}")
 
-        Pro = int(input("Pick a project by number: "))
-        Choice = Pro - 1
-        Mark = input(f"Do you want to mark {Choice} as complete?: ").lower()
-        if Mark == "yes":
-            print(f"{Choice}✅")
-            time.sleep(3)
-            Projects[Choice] = f"{Projects[Choice]} ✅"
-            print("\nUpdated Projects📁")
-            for index, Project in enumerate(Projects, start=1):
-              print(f"Project {index}: {Project}")
-        time.sleep(10)
-        Quit = input("Do you want to go back to menu?: ").lower()
-        if Quit == "yes":
-         print("Going back to menu...")
-         time.sleep(3)
-         break
-        else:
-            continue
+        while True:
+            try:
+                Choice = int(input("\nPick a project by number(0 to quit): "))
+                if Choice == 0:
+                    print("Goodbye...")
+                    time.sleep(3)
+                    break
+                elif Choice > 1 or Choice > len(Projects):
+                    print("Invalid option")
+                    continue
+
+                if "✅" in Projects[Choice]:
+                    print("You already finished this project")
+                else:
+                    Projects[Choice] += "✅"
+                    print("Step marked complete!")
+            except ValueError:
+                print("That is not a number!")
+        
+    
+                    
                 
 
 def choice():

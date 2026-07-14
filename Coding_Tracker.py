@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 Hours = []
 Session_Entries = []
 Roadmap = []
+Goal_Title = ""
 def load_data():
    try:
       with open("Coding Tracker Pro.txt", "r", encoding="utf-8") as file:
@@ -80,14 +81,15 @@ def show_menu():
    print("\n--------------")
    print("--Coding Tracker Pro")
    print("--------------------")
-   print("\n1. Log Session")
+   print("\n1. Log Session(List 1)")
    print("2. Show Session")
    print("3. Show statistics")
-   print("4. Log Goals")
+   print("4. Log Goals(List 2)")
    print("5. See Goals")
    print("6. Check completed Goals")
    print("7. Progress bar")
-   print("8. Quit")
+   print("8. Delete item")
+   print("9. Quit")
 
 
 def get_choice():
@@ -170,37 +172,45 @@ def show_statistics():
       print(f"The most you coded in a session was {Highest} hours.")
       print(f"the least you coded in a session was {Least} hours.")
 
+
 def Goals():
+   global Goal_Title
    if len(Roadmap) == 0:
-    Goal = input("What is your goal?(0 to quit): ")
-    Step = input("What is the first step to that goal?(0 to quit): ")
-    Roadmap.append(f"Goal: {Goal}")
-    Roadmap.append(Step)
-    while True:
-     Map = input("next step?(0 to quit): ")
-     Roadmap.append(Map)
-     if Map or Step or Goal == "0":
+        Goal = input("What is your goal? (0 to quit): ")
+        if Goal == "0": return
+        
+        Goal_Title = f"Goal: {Goal}"
+        Step = input("What is the first step to that goal? (0 to quit): ")
+        if Step == "0": return
+        
+        Roadmap.append(Step)
+        
+        while True:
+            Map = input("Next step? (0 to quit): ")
+            if Map == "0":
+                break
+            if Map.strip():
+                Roadmap.append(Map)
+                
         print("Saving Roadmap...")
-        time.sleep(3)
-        print("Go to option 5 to see your list")
-        time.sleep(2)
+        time.sleep(1)
         save_roadmap()
-        print("Roadmap Saved")
-        time.sleep(2)
-        break
-     else:
-        continue
-    return Goal
+        print("Go to option 5 to see your list\nRoadmap Saved")
    else:
-      print("\nGoals🎯")
-      Go = input("Do you want to add more goals?(0 to quit)").lower()
-      if Go == "yes":
-         while True:
-          Map = input("next step?(0 to quit): ")
-          Roadmap.append(Map)
-          if Map == "0":
-             time.sleep(3)
-             break
+        print("\nGoals🎯")
+        while True:
+            Go = input("Do you want to add more goals? (0 to quit): ").lower()
+            if Go == "0":
+                break
+            while True:
+                Map = input("Next step? (0 to quit): ")
+                if Map == "0":
+                    print("Saving data...")
+                    save_roadmap()
+                    break
+                if Map.strip():
+                    Roadmap.append(Map)
+
              
 
 def Goal_list():
@@ -209,16 +219,18 @@ def Goal_list():
         return
 
     print("\nGoal Roadmap🎯")
-    if Roadmap:
-      print(Roadmap[0])
-      for index, road in enumerate(Roadmap[1:], start=1):
-         print(f"{index}. {road}")
+    if Goal_Title:
+        print(Goal_Title)
+    
+    # Clean 1-to-1 mapping because Roadmap only contains steps now
+    for index, road in enumerate(Roadmap, start=1):
+        print(f"{index}. {road}")
 
 def Progress_bar():
    if len(Roadmap) == 0:
       print("No goals logged")
    else:
-      Check = [road for road in Roadmap if "✅" in road]
+      Completed = sum(1 for road in Roadmap if "✅" in road)
       Complete = "🟩"
       Complete_20 = "🟩"*2
       Complete_30 = "🟩"*3
@@ -229,7 +241,6 @@ def Progress_bar():
       Complete_80 = "🟩"*8
       Complete_90 = "🟩"*9
       Complete_100 = "🟩"*10
-      Completed = len(Check)
       Total = len(Roadmap)
       Percentage = Completed / Total * 100
       if Percentage >= 100:
@@ -260,6 +271,7 @@ def Progress_bar():
          else:
             None
    Progress = Bar
+   print("-------Progress Bar📶-----")
    print(f"{Progress}  Goal {Percentage:.2f}% completed")
 
 
@@ -267,54 +279,101 @@ def Progress_bar():
 
 def Check():
     if len(Roadmap) == 0:
-        print("No goals logged")
-        return
-
+            print("No goals logged")
+            return
     print("\nGoal Roadmap🎯")
     print(Roadmap[0])
+    
+for index, Road in enumerate(Roadmap[1:], start=1):
+            print(f"{index}. {Road}")
+    
+while True:
+            try:
+                Choice = int(input("\nWhich step did you complete? (0 to quit): "))
+    
+                if Choice == 0:
+                    break
+    
+                if Choice < 1 or Choice >= len(Roadmap):
+                    print("Invalid step.")
+                    continue
+    
+                if "✅" in Roadmap[Choice]:
+                    print("That step is already complete!")
+                else:
+                    Roadmap[Choice] += " ✅"
+                    print("Step marked complete!")
+    
+            except ValueError:
+                print("Please enter a number.")
+def delete():
+    Choice = int(input("Which list do you want to delete items from list 1/2:  "))
+    if Choice == 1:
+     if len(Hours) == 0:
+         time.sleep(3)
+         print("No projects logged")
+         return
+    else:
+        time.sleep(2)
+        print("\nSessions")
+        for index, Hour in enumerate(Hours, start=1):
+           print(f"{index}. {Hour}")
+        while True:
+         try:
+            Delete = int(input("\nWhich session would you like to delete (0 to quit): "))
 
-    for index, Road in enumerate(Roadmap[1:], start=1):
-        print(f"{index}. {Road}")
-
-    while True:
-        try:
-            Choice = int(input("\nWhich step did you complete? (0 to quit): "))
-
-            if Choice == 0:
+            if Delete == 0:
+                print("Leaving...")
+                time.sleep(3)
                 break
 
-            if Choice < 1 or Choice >= len(Roadmap):
+            if Delete < 1 or Delete > len(Hours):
                 print("Invalid step.")
                 continue
 
-            if "✅" in Roadmap[Choice]:
-                print("That step is already complete!")
-            else:
-                Roadmap[Choice] += " ✅"
-                print("Step marked complete!")
-
-        except ValueError:
-            print("Please enter a number.")
-
-    save_roadmap()
-
-def delete():
-    if len(Roadmap) == 0:
-         time.sleep(3)
-         print("No projects logged")
-    else:
-        time.sleep(2)
-        Delete = input("Are you sure you want to delete the last item?: ").lower()
-        if Delete == "yes":
-            print("Deleting last item...")
-            save_data()
+            removed_item = Hours.pop(Delete - 1)
+            print(f"Deleting: {removed_item}")
             time.sleep(3)
-            del Roadmap[-1]
             save_roadmap()
+            break
+
+         except ValueError:
+            print("Please enter a number.")
+    if Choice == 2:
+       if len(Hours) == 0:
+                time.sleep(3)
+                print("No projects logged")
+                return
+       else:
+               time.sleep(2)
+               print("\nGoal Roadmap🎯")
+               for index, road in enumerate(Roadmap, start=1):
+                  print(f"{index}. {road}")
+               while True:
+                try:
+                   Delete = int(input("\nWhich step would you like to delete (0 to quit): "))
+       
+                   if Delete == 0:
+                       print("Leaving...")
+                       time.sleep(3)
+                       break
+       
+                   if Delete < 1 or Delete > len(Roadmap):
+                       print("Invalid step.")
+                       continue
+       
+                   removed_item = Roadmap.pop(Delete - 1)
+                   print(f"Deleting: {removed_item}")
+                   time.sleep(3)
+                   save_roadmap()
+                   break
+       
+                except ValueError:
+                   print("Please enter a number.")
+
+
             
-        else:
-            time.sleep(2)
-            print("Ok!")
+        
 
 def main():
    load_data()
