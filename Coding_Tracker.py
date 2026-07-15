@@ -230,7 +230,7 @@ def Progress_bar():
    if len(Roadmap) == 0:
       print("No goals logged")
    else:
-      Completed = sum(1 for road in Roadmap if "✅" in road)
+      Completed = sum(1 for road in Roadmap[1:] if "✅" in road)
       Complete = "🟩"
       Complete_20 = "🟩"*2
       Complete_30 = "🟩"*3
@@ -241,7 +241,7 @@ def Progress_bar():
       Complete_80 = "🟩"*8
       Complete_90 = "🟩"*9
       Complete_100 = "🟩"*10
-      Total = len(Roadmap)
+      Total = len(Roadmap[1:])
       Percentage = Completed / Total * 100
       if Percentage >= 100:
          Bar = Complete_100
@@ -270,9 +270,23 @@ def Progress_bar():
             Complete + Bar
          else:
             None
+   Response = ""
+   if Percentage == 100:
+       Response = ("You made it to your goal!🎉🎊🥳🥳")
+   elif Percentage >= 80:
+       Response = ("You are so close, you got this!👊")
+   elif Percentage >= 51:
+       Response = ("Your more than halfway there, Keep going!🔥")
+   elif Percentage >= 40:
+       Response = ("You have made some serious progress, keep pushing!💪")
+   elif Percentage >= 20:
+       Response = ("Progress is progress — stay consistent!📈")
+   elif Percentage >= 1:
+       Response = ("You’ve started, and that matters. Keep working!🚀")
    Progress = Bar
    print("-------Progress Bar📶-----")
    print(f"{Progress}  Goal {Percentage:.2f}% completed")
+   print(Response)
 
 
 
