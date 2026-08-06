@@ -190,7 +190,7 @@ def Goals():
             if Map == "0":
                 break
             if Map.strip():
-                Roadmap.append(Map)
+                  Roadmap.append(Map.strip())
                 
         print("Saving Roadmap...")
         time.sleep(1)
@@ -201,15 +201,15 @@ def Goals():
         while True:
             Go = input("Do you want to add more goals? (0 to quit): ").lower()
             if Go == "0":
-                break
+                return
             while True:
                 Map = input("Next step? (0 to quit): ")
                 if Map == "0":
                     print("Saving data...")
                     save_roadmap()
-                    break
+                    return
                 if Map.strip():
-                    Roadmap.append(Map)
+                  Roadmap.append(Map.strip())
 
              
 
@@ -229,47 +229,18 @@ def Goal_list():
 def Progress_bar():
    if len(Roadmap) == 0:
       print("No goals logged")
+      return
+
+   steps = Roadmap[1:]
+   if not steps:
+      Percentage = 0
    else:
-      Completed = sum(1 for road in Roadmap[1:] if "✅" in road)
-      Complete = "🟩"
-      Complete_20 = "🟩"*2
-      Complete_30 = "🟩"*3
-      Complete_40 = "🟩"*4
-      Complete_50 = "🟩"*5
-      Complete_60 = "🟩"*6
-      Complete_70 = "🟩"*7
-      Complete_80 = "🟩"*8
-      Complete_90 = "🟩"*9
-      Complete_100 = "🟩"*10
-      Total = len(Roadmap[1:])
-      Percentage = Completed / Total * 100
-      if Percentage >= 100:
-         Bar = Complete_100
-      elif Percentage >= 90:
-         Bar = f"{Complete_90}⬜"
-      elif Percentage >= 80:
-         Bar = f"{Complete_80}⬜⬜"
-      elif Percentage >= 70:
-         Bar = f"{Complete_70}⬜⬜⬜"
-      elif Percentage >= 60:
-         Bar = f"{Complete_60}⬜⬜⬜⬜"
-      elif Percentage >= 50:
-         Bar = f"{Complete_50}⬜⬜⬜⬜⬜"
-      elif Percentage >= 40:
-         Bar = f"{Complete_40}⬜⬜⬜⬜⬜⬜"
-      elif Percentage >= 30:
-         Bar = f"{Complete_30}⬜⬜⬜⬜⬜⬜⬜"
-      elif Percentage >= 20:
-         Bar = f"{Complete_20}⬜⬜⬜⬜⬜⬜⬜⬜"
-      elif Percentage >= 10:
-         Bar = f"{Complete}⬜⬜⬜⬜⬜⬜⬜⬜⬜"
-      else:
-         Bar = "⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜"
-      for Road in Roadmap:
-         if "✅" in Road:
-            Complete + Bar
-         else:
-            None
+      Completed = sum(1 for road in steps if "✅" in road)
+      Percentage = (Completed / len(steps)) * 100
+
+   green = int(Percentage // 10)
+   Bar = "🟩" * green + "⬜" * (10 - green)
+
    Response = ""
    if Percentage == 100:
        Response = ("You made it to your goal!🎉🎊🥳🥳")
@@ -283,9 +254,9 @@ def Progress_bar():
        Response = ("Progress is progress — stay consistent!📈")
    elif Percentage >= 1:
        Response = ("You’ve started, and that matters. Keep working!🚀")
-   Progress = Bar
+
    print("-------Progress Bar📶-----")
-   print(f"{Progress}  Goal {Percentage:.2f}% completed")
+   print(f"{Bar}  Goal {Percentage:.2f}% completed")
    print(Response)
 
 
@@ -348,17 +319,17 @@ def delete():
             removed_item = Hours.pop(Delete - 1)
             print(f"Deleting: {removed_item}")
             time.sleep(3)
-            save_roadmap()
+            save_data()
             break
 
          except ValueError:
             print("Please enter a number.")
    elif Option == 2:
-       if len(Hours) == 0:
-                time.sleep(3)
-                print("No projects logged")
-                return
-       else:
+         if len(Roadmap) == 0:
+               time.sleep(3)
+               print("No goals logged")
+               return
+   else:
          time.sleep(2)
          print("\nGoal Roadmap🎯")
          for index, road in enumerate(Roadmap, start=1):

@@ -1,123 +1,119 @@
 import time
-Sessions = []
+import json
+workouts = []
+
 def load_data():
+    print("Loading...")
+    time.sleep(2)
     try:
-        with open("Workout Tracker V2.txt", "r") as file:
-            for line in file:
-                Sessions.append(int(line.strip()))
+        with open("Workout.json", "r") as file:
+            workouts = json.load(file)
     except FileNotFoundError:
-        print("Welcome to Workout Tracker V2💥🏋‍♀🧘🏽‍♀️🔥💪🏼")
-        print("To start, pick option 1 so we can log your sessions per week ")
+        print("Welcome to workout tracker! ")
+        time.sleep(2)
+        print("to start, choos eoption 1 and create a workout!")
 
 def save_data():
-    with open("Workout Tracker V2.txt", "w") as file:
-        for Sesh in Sessions:
-            file.write(str(Sesh) + "\n")
-
-def Show_menu():
-    print("\n---------------------")
-    print("--Workout Tracker V2💪🏼---")
-    print("-----------------------")
-    print("\n1. Log sessions")
-    print("2. View Workouts")
-    print("3. View Statistics")
-    print("4. Coach Feedback")
-    print("5. Quit")
-
-def Option():
-     Choice = input("Pick an option: ")
-     return Choice
-
-def Log_sessions():
-    Sesh = int(input("Workouts done this week: "))
-    Sessions.append(Sesh)
-    print("Analyzing Consisteny...")
+    print("Saving data...")
     time.sleep(3)
-    save_data()
-    print("Workouts logged")
+    try:
+        with open("workouts.json", "w") as file:
+            json.dump(workouts, file, indent=4)
+    except Exception as error:
+        print(f"Error saving data: {error}")
 
-def View_Workouts():
-    if len(Sessions) == 0:
-        print("Loading sessions...")
-        time.sleep(3)
-        print("No sessions logged")
-    else:
-        print("Loading sessions...")
-        time.sleep(3)
-        print("\nWorkout History📖")
-        for index, Sesh in enumerate(Sessions, start=1):
-            print(f"Week {index}: {Sesh} Workouts")
+def show_menu():
+    print("\nWorkout Tracker")
+    print("1. Create Workout")
+    print("2. Workout History")
+    print("3. Suggestions")
+    print("4. Personal Records")
+    print("5. Statistics")
+    print("6. Weekly Chart")
+    print("7. Quit")
 
-def View_statistics():
-    if len(Sessions) == 0:
-            print("Loading statistics...")
-            time.sleep(3)
-            print("No sessions logged")
-    else:
-        Total = sum(Sessions)
-        Average = sum(Sessions)/len(Sessions)
-        Highest = max(Sessions)
-        Least = min(Sessions)
-        print("Loading Statistics...")
-        time.sleep(3)
-        print("\nWorkout Statistics📊")
-        print(f"You have had a total of {Total} workouts since you first started.")
+def Choice():
+    Choice = input("Pick an option: ")
+    return Choice
 
-        print(f"You average {Average} workouts per week")
+def Create():
+    print("Here you can create a workout!")
+    time.sleep(2)
+    print("If you ever want to quit just press 0!")
+    time.sleep(1)
 
-        print(f"The most you have worked out in a week is {Highest} sessions")
+    Date = input("Date: ")
+    if Date == "0": return
 
-        print(f"The least you have worked out in a week is {Least} sessions")
+    Group = input("Muscle Group: ")
+    if Group == "0": return
 
+    current_workout = {
+        "Date": Date,
+        "Group": Group,
+        "Exercises": [],
+     }
 
-def Coach_Feedback():
-    if len(Sessions) == 0:
-                print("Loading sessions...")
-                time.sleep(3)
-                print("No sessions logged")
-    else:
-         Average = sum(Sessions)/len(Sessions)
-         if Average >= 7:
-              return("That is really good and consistent, although you should make sure you dont overdue it by adding in some rest days😁!")
-         elif Average >= 5:
-              return("This is perfect! You workout consistent enough that you'll make progress and will still get enough rest👌!")
-    
-         elif Average >= 3:
-              return("This is the bare minimum! You workout enough to keep your body healthy. Just make sure you stay consistent📈!")
-         else:
-              return("Good, but you could workout a little more.")
-
-def Ai(Coach_Feedback):
-     return(f"Ai: {Coach_Feedback()}")
-
-def main():
-     load_data()
-     while True:
-          Show_menu()
-          Choice = Option()
-
-          if Choice == "1":
-               Log_sessions()
-          elif Choice == "2":
-               View_Workouts()
-          elif Choice == "3":
-               View_statistics()
-          elif Choice == "4":
-               ChatGPT = Ai(Coach_Feedback)
-               print(ChatGPT)
-          elif Choice == "5":
-               print("Goodbye")
-               save_data()
-               break
-          else:
-               print("Invalid option")
-
-main()
-
+    while True:
+        Name = input("Exercise: ")
+        if Name == "0": return
 
         
+        exercise = {
+            "Name": Name,
+            "Sets": []
+        }
+        try:
+          set_count = int(input("Sets: "))
+        except ValueError:
+            print("Please enter a valid number")
+            continue
+        for index in range(1, set_count + 1):
+            try:
+                print(f"Set: {index}")
+                weight = int(input("Weight: "))
+                reps = int(input("Reps: "))
+            except ValueError:
+                print("Invalid input, setting weight and reps to 0")
+                weight, reps = 0, 0
+
+            Set_data = {
+                "Weight": weight,
+                "Reps": reps
+            }
+            exercise["Sets"].append(Set_data)
+        current_workout["Exercises"].append(exercise)
+        workouts.append(current_workout)
+
+        quit = input("Do you want to add another exericise?(0 for no, any key for yes): ")
+
+        if quit == "0": 
+                save_data()
+                break
+        else:
+               if current_workout["Exercises"]:
+                workouts.append(current_workout)
+                save_data()
+               else:
+                print("Workout cancelled. No exercises added.")
 
 
-         
 
-
+def main():
+    load_data()
+    while True:
+        show_menu()
+        Option = Choice()
+        if Option == "1":
+            Create()
+        elif Option == "7":
+            quit = input("are you sure you want to quit?(0 for yes any key for no): ")
+            if quit == "0":
+                break
+            else:
+                continue
+            
+main()
+            
+        
+        

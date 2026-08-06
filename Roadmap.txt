@@ -1,9 +1,0 @@
-Goal: Build Nikao
-Learn Python ✅
-Learn HTML ✅
-Learn Java ✅
-Learn C++ ✅
-Learn Web development ✅
-Learn Xcode ✅
-Learn how to make MVP ✅
-Learn product design ✅
