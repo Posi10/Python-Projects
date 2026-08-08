@@ -1,26 +1,27 @@
-import time
+import time 
 import json
 workouts = []
 
 def load_data():
-    print("Loading...")
-    time.sleep(2)
-    try:
-        with open("Workout.json", "r") as file:
-            workouts = json.load(file)
+    global workouts
+    print("Loading data...")
+    time.sleep(3)
+    try: 
+     with open("workouts.json", "r") as file:
+        workouts = json.load(file)
     except FileNotFoundError:
-        print("Welcome to workout tracker! ")
+        print("Welcome to Workout Tracker!")
         time.sleep(2)
-        print("to start, choos eoption 1 and create a workout!")
+        print("To start, choose option 1 to create a workout!")
 
 def save_data():
     print("Saving data...")
-    time.sleep(3)
+    time.sleep(2)
     try:
-        with open("workouts.json", "w") as file:
-            json.dump(workouts, file, indent=4)
+     with open("workouts.json", "w") as file:
+        json.dump(workouts, file, indent=4)
     except Exception as error:
-        print(f"Error saving data: {error}")
+       print(f"Error saving file: {error}")
 
 def show_menu():
     print("\nWorkout Tracker")
@@ -39,9 +40,7 @@ def Choice():
 def Create():
     print("Here you can create a workout!")
     time.sleep(2)
-    print("If you ever want to quit just press 0!")
-    time.sleep(1)
-
+    print("If you ever want to quit, just press 0")
     Date = input("Date: ")
     if Date == "0": return
 
@@ -51,69 +50,78 @@ def Create():
     current_workout = {
         "Date": Date,
         "Group": Group,
-        "Exercises": [],
-     }
+        "Exercises": []
+    }
 
     while True:
-        Name = input("Exercise: ")
-        if Name == "0": return
+        Name = input("Exercise Name: ")
+        if Name == "0": break
 
-        
-        exercise = {
+        Exercise = {
             "Name": Name,
             "Sets": []
         }
         try:
-          set_count = int(input("Sets: "))
+            Set_count = int(input("Sets: "))
+            if Set_count == 0: break
         except ValueError:
-            print("Please enter a valid number")
-            continue
-        for index in range(1, set_count + 1):
-            try:
-                print(f"Set: {index}")
-                weight = int(input("Weight: "))
-                reps = int(input("Reps: "))
-            except ValueError:
-                print("Invalid input, setting weight and reps to 0")
-                weight, reps = 0, 0
+           print("Please enter a valid number.")
+           continue
+        for index in range(1, Set_count + 1):
+           print(f"Set {index}: ")
+           Weight = input("Weight: ")
+           if Weight == "0": return
+           Reps = input("Reps: ")
+           if Reps == "0": return
 
-            Set_data = {
-                "Weight": weight,
-                "Reps": reps
-            }
-            exercise["Sets"].append(Set_data)
-        current_workout["Exercises"].append(exercise)
-        workouts.append(current_workout)
-
-        quit = input("Do you want to add another exericise?(0 for no, any key for yes): ")
-
+           Set = {
+              "Weight" : Weight,
+              "Reps": Reps
+           }
+           Exercise["Sets"].append(Set)
+        current_workout["Exercises"].append(Exercise)
+        quit = input("Do you want to add more exercises?(0 for no, any for yes)")
         if quit == "0": 
-                save_data()
-                break
-        else:
-               if current_workout["Exercises"]:
-                workouts.append(current_workout)
-                save_data()
-               else:
-                print("Workout cancelled. No exercises added.")
+           break
 
+    if current_workout["Exercises"]:
+       workouts.append(current_workout)
+       save_data()
 
+def History():
+   if len(workouts) == 0:
+      print("No workouts logged.")
+   else:
+      for workout in workouts:
+         print(f"\nDate: {workout['Date']} | Muscle Group: {workout['Group']}")
+         for item in workout["Exercises"]:
+            print(f"  {item['Name']}")
+            for i, s in enumerate(item['Sets'], 1):
+               print(f"    Set {i}: {s['Weight']}lbs {s['Reps']} reps")
+            print()
 
+          
+      
+    
+
+         
 def main():
-    load_data()
-    while True:
-        show_menu()
-        Option = Choice()
-        if Option == "1":
-            Create()
-        elif Option == "7":
-            quit = input("are you sure you want to quit?(0 for yes any key for no): ")
-            if quit == "0":
-                break
-            else:
-                continue
-            
+   load_data()
+   while True:
+      show_menu()
+      Option = Choice()
+      if Option == "1":
+         Create()
+      elif Option == "2":
+         History()
+      elif Option == "7":
+         quit = input("Are you sure you want to quit(0 for yes, any key for no): ")
+         if quit == "0":
+               break
+         else:
+               print("Invalid input, please choose one of the following options.")
+               continue
+    
 main()
-            
-        
-        
+
+
