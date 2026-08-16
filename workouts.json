@@ -1,56 +1,22 @@
 [
     {
-        "Date": "August 10, 2026",
-        "Group": "Back",
+        "Date": "August 13, 2026",
+        "Group": "Chest",
         "Exercises": [
             {
-                "Name": "Lat pulldown",
+                "Name": "Inclne Bench Press",
                 "Sets": [
                     {
-                        "Weight": "100",
-                        "Reps": "10"
+                        "Weight": 105,
+                        "Reps": 10
                     },
                     {
-                        "Weight": "100",
-                        "Reps": "9"
+                        "Weight": 105,
+                        "Reps": 9
                     },
                     {
-                        "Weight": "100",
-                        "Reps": "11"
-                    }
-                ]
-            },
-            {
-                "Name": "Cable Back Rows",
-                "Sets": [
-                    {
-                        "Weight": "110",
-                        "Reps": "12"
-                    },
-                    {
-                        "Weight": "110",
-                        "Reps": "11"
-                    },
-                    {
-                        "Weight": "110",
-                        "Reps": "10"
-                    }
-                ]
-            },
-            {
-                "Name": "Face Pulls",
-                "Sets": [
-                    {
-                        "Weight": "50",
-                        "Reps": "7"
-                    },
-                    {
-                        "Weight": "50",
-                        "Reps": "8"
-                    },
-                    {
-                        "Weight": "50",
-                        "Reps": "6"
+                        "Weight": 105,
+                        "Reps": 8
                     }
                 ]
             }
