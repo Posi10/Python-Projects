@@ -1,91 +1,64 @@
-import time
-import json
-Trips = []
-
-def load_data():
-    global Trips
-    print("Loading data...")
-    time.sleep(3)
-    try:
-        with open("Trips.json", "r") as file:
-            Trips = json.load(file)
-    except FileNotFoundError:
-        print("Welcome to Workout tracker!")
-        time.sleep(2)
-        print("To start, please pick option 1 to log your workouts!")
-        time.sleep(1)
-
-def save_data():
-    print("Saving data...")
-    time.sleep(3)
-    try:
-        with open("Trips.json", "w") as file:
-            json.dump(Trips, file, indent=4)
-    except Exception as error:
-        print(f"Error saving data: {error}")
-
-def show_menu():
-    print("\nWorkout Tracker")
-    print("1. Create Workout")
-    print("2. Workout History")
-    print("3. Suggestions")
-    print("4. Personal Records")
-    print("5. Statistics")
-    print("6. Weekly Chart")
-    print("7. Quit")
-
-def Choice():
-    Choice = input("Pick an option: ")
-    return Choice
-
-def Create():
-    print("Here you can log in your workouts!")
-    time.sleep(2)
-    print("if you ever want to quit, just press 0!")
-    time.sleep(1)
-
-    Date = input("Date: ")
-    if Date == "0": return
-
-    Store = input("Store name: ")
-    if Store == "0": return
-
-    current_trip = {
-        "Date": Date,
-        "Store": Store,
-        "Recipies": []
+# The list of workout data to run your code against:
+workouts = [
+    {
+        "Date": "2026-02-10",
+        "Exercises": [
+            {
+                "Name": "Bench Press",
+                "Sets": [
+                    {"Weight": 135, "Reps": 10},
+                    {"Weight": 185, "Reps": 5}
+                ]
+            },
+            {
+                "Name": "Squat",
+                "Sets": [
+                    {"Weight": 225, "Reps": 5}
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "2026-02-15",
+        "Exercises": [
+            {
+                "Name": "Bench Press",
+                "Sets": [
+                    {"Weight": 200, "Reps": 1},
+                    {"Weight": 185, "Reps": 6}
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "2026-02-20",
+        "Exercises": [
+            {
+                "Name": "Bench Press",
+                "Sets": [
+                    {"Weight": 200, "Reps": 3}  # This should be your final PR!
+                ]
+            }
+        ]
     }
+]
 
-    while True:
-        Name = input("Recipie name: ")
-        if Name == "0": break
+# Set this variable to choose which exercise to look up:
+selected_exercise = "Bench Press"
 
-        Ingredients = {
-            "Name": Name,
-            "ingredients": []
-        }
-        while True:
-            Ingredient_count = int(input("Amount of Items: "))
-            for index in range(1, Ingredient_count + 1):
-                Ingredient = input(f"Ingredient {index}: ")
-                Ingredients["ingredients"].append(Ingredient)
-            current_trip["Recipies"].append(Ingredients)
-            quit = input("Do you want to add more recipies?(0 for no, any key for yes): ")
-            if quit == "0":
-                Trips.append(current_trip)
-                save_data()
-                break
-            else:
-                if current_trip["Recipies"]:
-                    Trips.append(current_trip)
-                    save_data()
-
-Create()
-                
-
-        
-        
-
-        
-     
-        
+best_workout = None
+best_weight = 0
+best_reps = 0
+for workout in workouts:
+    for exercise in workout["Exercises"]:
+        if exercise.get('Name') == selected_exercise:
+            for Set in exercise.get("Sets", []):
+                w = Set.get('Weight', 0)
+                r = Set.get('Reps', 0)
+                if (w, r) > (best_weight, best_reps):
+                    best_weight, best_reps = w, r
+                    best_workout = workout
+if best_workout == None:
+        print(f"Nothing found on {selected_exercise}")
+else:
+        print(f"Your PR with {selected_exercise} is {best_weight}lbs x {best_reps} reps (from {best_workout['Date']})")

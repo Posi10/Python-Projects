@@ -21,5 +21,116 @@
                 ]
             }
         ]
+    },
+    {
+        "Date": "August 17, 2026",
+        "Group": "Back",
+        "Exercises": [
+            {
+                "Name": "Lat Pulldowns",
+                "Sets": [
+                    {
+                        "Weight": 132,
+                        "Reps": 10
+                    },
+                    {
+                        "Weight": 132,
+                        "Reps": 9
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "August 18, 2026",
+        "Group": "Bicep",
+        "Exercises": [
+            {
+                "Name": "Bicep curls",
+                "Sets": [
+                    {
+                        "Weight": 100,
+                        "Reps": 100
+                    },
+                    {
+                        "Weight": 100,
+                        "Reps": 100
+                    },
+                    {
+                        "Weight": 100,
+                        "Reps": 1000
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "September 4, 2026",
+        "Group": "Chest",
+        "Exercises": [
+            {
+                "Name": "Incline Bench Press",
+                "Sets": [
+                    {
+                        "Weight": 105,
+                        "Reps": 4
+                    },
+                    {
+                        "Weight": 105,
+                        "Reps": 4
+                    },
+                    {
+                        "Weight": 105,
+                        "Reps": 4
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "September 8, 2026",
+        "Group": "Chest",
+        "Exercises": [
+            {
+                "Name": "Incline Bench Press",
+                "Sets": [
+                    {
+                        "Weight": 105,
+                        "Reps": 5
+                    },
+                    {
+                        "Weight": 105,
+                        "Reps": 3
+                    },
+                    {
+                        "Weight": 105,
+                        "Reps": 4
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "Date": "August 20, 2026",
+        "Group": "Arms",
+        "Exercises": [
+            {
+                "Name": "Bicep curls",
+                "Sets": [
+                    {
+                        "Weight": 200,
+                        "Reps": 20
+                    },
+                    {
+                        "Weight": 200,
+                        "Reps": 20
+                    },
+                    {
+                        "Weight": 200,
+                        "Reps": 30
+                    }
+                ]
+            }
+        ]
     }
 ]
