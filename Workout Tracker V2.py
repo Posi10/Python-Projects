@@ -100,16 +100,17 @@ def Create():
 
 def History():
     if len(workouts) == 0:
-        print("No workouts found, please log a workout.")
+        print("No workouts logged")
     else:
-     print("\n---Workout history---")
-     for workout in workouts:
-        print(f"Date: {workout['Date']} | {workout['Group']}")
-        for e in workout["Exercises"]:
-            print(f"Exercise: {e['Name']}")
-            for i, s in enumerate(e["Sets"], start=1):
-                print(f"Set {i}: {s['Weight']}lbs x {s['Reps']} reps")
+        print("\n---Workout History---")
+        for workout in workouts:
+            print(f"{workout['Date']} | {workout['Group']}")
+            for exercise in workout["Exercises"]:
+                print(f"  {exercise['Name']}")
+                for i, s in enumerate(exercise["Sets"], start=1):
+                    print(f"   Set {i}: {s['Weight']}lbs x {s['Reps']} reps")
             print()
+                    
 
 def Suggestions():
     if len(workouts) == 0:
@@ -124,22 +125,23 @@ def Suggestions():
       for index, workout in enumerate(workouts, start=1):
         print(f"{index}. {workout['Date']} | {workout['Group']}")
 
-      Pick = int(input("Pick a workout(0 to quit): "))
+        Pick = int(input("Pick an option(0 to quit): "))
 
-      if Pick == 0:
-        print("Leaving...")
-        time.sleep(1)
-        return
-      elif Pick < 1 or Pick > len(workouts):
-        print("Invalid option, Please pick one of tthe options above.")
-      else:
-        selected_workout = workouts[Pick - 1]
-        print(f"You chose {Pick}: {selected_workout['Date']} | {selected_workout['Group']}")
-        Total_reps = 0
+        if Pick == 0:
+            print("Leaving...")
+            time.sleep(2)
+            break
+        elif Pick < 1 or Pick > len(workouts):
+            print("Invalid option, Please pick one of the following options.")
+        else:
+            selected_workout = [Pick - 1]
+            print(f"The workout you chose was {selected_workout['Date']} | {selected_workout['Group']}")
+
         for exercise in selected_workout["Exercises"]:
-            print(f"  Exercise: {exercise['Name']}")
-            for i, s in enumerate(exercise["Sets"], start=1):
-                print(f"   Set {i}: {s['Weight']}lbs {s['Reps']} reps")
+            Total_reps = 0
+            print(f"{exercise['Name']}")
+            for i, s in enumerate(selected_workout, start=1):
+                print(f"Set {i}: {s['Weight']}lbs x {s['Reps']} reps")
                 Total_reps += s['Reps']
 
 
@@ -164,8 +166,7 @@ def Record():
     time.sleep(1)
 
     while True:
-        print("\n==============================")
-        user_input = input("Search exercise (or type 'exit'): ").strip()
+        user_input = input("\nSearch exercise (or type 'exit'): ").strip()
 
         if user_input.lower() == "exit":
             print("Goodbye!")
@@ -190,7 +191,7 @@ def Record():
         else:
             print("\nDid you mean one of these?")
             for index, option in enumerate(matches):
-                print(f"[{index + 1}] {option}")
+                print(f"{index + 1}. {option}")
 
             choice = input("Enter the number of your choice (or press Enter to skip): ").strip()
             if choice.isdigit() and 0 < int(choice) <= len(matches):
