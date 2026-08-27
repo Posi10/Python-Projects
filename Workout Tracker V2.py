@@ -70,6 +70,7 @@ def Create():
                 if Set_count == 0: return
             except ValueError:
                 print("Invalid input, please input a valid number.")
+                continue
             for i in range(1, Set_count + 1):
                 print(f"Set {i}: ")
                 try:
@@ -80,6 +81,7 @@ def Create():
                  if Reps == 0: return
                 except ValueError:
                    print("Invalid input, please input a valid number.")
+                   continue
 
                 Set = {
                     "Weight": Weight,
@@ -122,36 +124,39 @@ def Suggestions():
      time.sleep(1)
      print("Pick a workout by number to get suggestions for that workout!(0 to quit)")
      while True:
-      for index, workout in enumerate(workouts, start=1):
-        print(f"{index}. {workout['Date']} | {workout['Group']}")
+         for index, workout in enumerate(workouts, start=1):
+             print(f"{index}. {workout['Date']} | {workout['Group']}")
+         try:
+          Pick = int(input("Pick an option(0 to quit): "))
+          if Pick == 0:
+             print("Leaving...")
+             time.sleep(2)
+             break
+          elif Pick < 1 or Pick > len(workouts):
+             print("Invalid option, please pick one of the following options")
+             continue
+          else:
+             selected_workout = workouts[Pick - 1]
+             print(f"The workout you chose was {selected_workout['Date']} | {selected_workout['Group']}")
+         except ValueError:
+          print("Invalid input, Please enter a valid number")
+          continue
 
-        Pick = int(input("Pick an option(0 to quit): "))
+         for exercise in selected_workout["Exercises"]:
+                 Total_reps = 0
+                 print(f"{exercise['Name']}")
+                 for i, s in enumerate(exercise["Sets"], start=1):
+                     print(f"Set {i}. {s['Weight']}lbs x {s['Reps']} reps")
+                     Total_reps += s["Reps"]
 
-        if Pick == 0:
-            print("Leaving...")
-            time.sleep(2)
-            break
-        elif Pick < 1 or Pick > len(workouts):
-            print("Invalid option, Please pick one of the following options.")
-        else:
-            selected_workout = [Pick - 1]
-            print(f"The workout you chose was {selected_workout['Date']} | {selected_workout['Group']}")
+                 Average = Total_reps/len(exercise["Sets"])
+                 if Average >= 12:
+                  print("That is great that you can lift that amount of weight with that much reps. But with working out, it is better to up the weight when you get to a certain amount of reps.  That is called progressive overload. I would suggest you up the weight by at least 5lbs. That is what will maximze muscle growth.")
+                 elif Average <= 5:
+                  print("It is amazing that you can lift that weight. But it may be a little too heavy for you. Having little reps shows you might not be lifting with optimal form. Try and lower the weight, I know it sounds counterintuitive but it is better to have a less weight with a better stretch and controlled negative then more weight and swinging all over the place.  ")
+                 else:
+                  print("Honestly your great where your at right now. Just remember once it starts feeling easy, progressive overload. ")
 
-        for exercise in selected_workout["Exercises"]:
-            Total_reps = 0
-            print(f"{exercise['Name']}")
-            for i, s in enumerate(selected_workout, start=1):
-                print(f"Set {i}: {s['Weight']}lbs x {s['Reps']} reps")
-                Total_reps += s['Reps']
-
-
-            Average = Total_reps/len(exercise["Sets"])
-            if Average >= 12:
-                print("That is great that you can lift that amount of weight with that much reps. But with working out, it is better to up the weight when you get to a certain amount of reps.  That is called progressive overload. I would suggest you up the weight by at least 5lbs. That is what will maximze muscle growth.")
-            elif Average <= 5:
-                print("It is amazing that you can lift that weight. But it may be a little too heavy for you. Having little reps shows you might not be lifting with optimal form. Try and lower the weight, I know it sounds counterintuitive but it is better to have a less weight with a better stretch and controlled negative then more weight and swinging all over the place.  ")
-            else:
-                print("Honestly your great where your at right now. Just remember once it starts feeling easy, progressive overload. ")
 
 def Record():
     if len(workouts) == 0:
@@ -166,11 +171,9 @@ def Record():
     time.sleep(1)
 
     while True:
-        user_input = input("\nSearch exercise (or type 'exit'): ").strip()
-
-        if user_input.lower() == "exit":
-            print("Goodbye!")
-            break
+        user = input("Search for an exercise(0 to quit): ")
+        if user == "0":
+            return
 
         all_exercise_names = []
         for workout in workouts:
@@ -179,48 +182,57 @@ def Record():
                 if name:
                     all_exercise_names.append(name)
 
-        matches = difflib.get_close_matches(user_input.lower(), [name.lower() for name in all_exercise_names], n=3, cutoff=0.5)
+        matches = difflib.get_close_matches(user.title(), [name.title() for name in all_exercise_names], n=3, cutoff=0.7)
 
         if not matches:
-            print(f"No matching exercises found for {user_input}")
+            print("No exercises found fitting that name. Please try again.")
             continue
 
-        if len(matches) == 1:
-            selected_exercise = matches[0].lower()
-            print(f"Searching for: {matches[0]}...")
-        else:
-            print("\nDid you mean one of these?")
-            for index, option in enumerate(matches):
-                print(f"{index + 1}. {option}")
+        selected_exercise = None
 
-            choice = input("Enter the number of your choice (or press Enter to skip): ").strip()
-            if choice.isdigit() and 0 < int(choice) <= len(matches):
-                selected_exercise = matches[int(choice) - 1].lower()
-            else:
-                print("Search cancelled.")
+        if len(matches) == 1:
+            selected_exercise = matches[0].title()
+            print(f"Analyzing {selected_exercise}...")
+            time.sleep(2)
+        else:
+            for i, match in enumerate(matches, start=1):
+                print(f"{i}. {match}")
+            try:
+                choice = int(input("Did you mean one of these?(0 to quit): "))
+                if choice == 0:
+                    continue
+                if choice < 1 or choice > len(matches):
+                    print("Invalid input, please pick one of the following options.")
+                    continue
+                selected_exercise = matches[choice - 1].title().strip()
+                print(f"Analyzing {selected_exercise}")
+                time.sleep(2)
+            except ValueError:
+                print("Invalid input, Please input a valid number!")
                 continue
+
+        if selected_exercise is None:
+            continue
 
         best_weight = 0
         best_reps = 0
         best_workout = None
-        matched_name = None
 
         for workout in workouts:
             for exercise in workout["Exercises"]:
                 exercise_name = exercise.get("Name", "")
-                if exercise_name.strip().lower() == selected_exercise:
-                    matched_name = exercise_name
-                    for set_data in exercise.get("Sets", []):
-                        w = set_data.get("Weight", 0)
-                        r = set_data.get("Reps", 0)
-                        if (w, r) > (best_weight, best_reps):
-                            best_weight, best_reps = w, r
-                            best_workout = workout
-
-        if best_workout is None:
-            print(f"No data available for {user_input}")
+                if exercise_name.title().strip() == selected_exercise:
+                        for Set in exercise.get("Sets", []):
+                            w = Set.get("Weight", 0)
+                            r = Set.get("Reps", 0)
+                            if (w, r) > (best_weight, best_reps):
+                                best_weight, best_reps = w, r
+                                best_workout = workout
+        if best_workout == None:
+            print(f"We coudnt find any data availible for {selected_exercise.title()}")
         else:
-            print(f"Your PR for {matched_name} is currently {best_weight}lbs x {best_reps} reps. (for {best_workout['Date']})")
+            print(f"Your PR for {selected_exercise.title()} is {best_weight}lbs x {best_reps} reps. On {best_workout['Date']}")
+
 
 
 def main():
@@ -239,9 +251,9 @@ def main():
         elif Option == "7":
             Quit = input("Are you sure you want to quit?(0 for no): ")
             if Quit == "0": 
-                break
-            else:
                 continue
+            else:
+                break
 
      
 main()
