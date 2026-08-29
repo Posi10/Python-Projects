@@ -94,10 +94,9 @@ def Create():
       quit = input("Do you want to add more exercises?(0 for no, any key for yes): ")
       if quit == "0":
          print("If you want to see your workouts, go to workout history!")
-         print("Leaving...")
-         time.sleep(2)
          if current_workout["Exercises"]:
             workouts.append(current_workout)
+            save_data()
             return
       else:
          continue
@@ -252,7 +251,78 @@ def Record():
          print(f"Your PR for {selected_exercise_name} is {best_weight}lbs x {best_reps} reps. On {best_workout['Date']}")
          time.sleep(10)
       return
-   
+
+def Statistics():
+   if len(workouts) == 0:
+      print("No workouts logged. Choose option 1 to log a workout")
+   else:
+    while True:
+      Muscles = []
+      for workout in workouts:
+         name = workout.get("Group", "")
+         if name:
+            Muscles.append(name)
+      
+      for index, muscle in enumerate(Muscles, start=1):
+         print(f"{index}. {muscle} group")
+      try: 
+       Pick = int(input("Pick an option: "))
+
+       if Pick < 1 or Pick > len(Muscles):
+         print("Invalid input, please pick one of the following options.")
+         continue
+      except ValueError:
+         print("Invalid input, please enter a valid number!")
+         continue
+
+      
+      else:
+         Selected_group = Muscles[Pick - 1]
+         print(f"You picked {Selected_group}")
+
+         Total_sets = 0
+         Total_weight = 0
+         Total_reps = 0
+         Total_volume = 0
+         Average_weight = 0
+         Average_reps = 0
+
+         print("Analyzing")
+         time.sleep(3)
+
+         for workout in workouts:
+            if Selected_group.title().strip() == workout["Group"]:
+               for exercise in workout["Exercises"]:
+                  for set in exercise["Sets"]:
+                     # per-set aggregation using safe getters
+                     Total_sets += 1
+                     reps = set.get('Reps', 0)
+                     weight = set.get('Weight', 0)
+                     Total_reps += reps
+                     Total_weight += weight
+
+                     
+                     Total_volume += weight * reps
+
+         
+         if Total_sets:
+            Average_weight = Total_weight / Total_sets
+            Average_reps = Total_reps / Total_sets
+         else:
+            Average_weight = 0
+            Average_reps = 0
+
+         print(f"\nStatistics: {Selected_group}")
+         print(f"1. Total Sets: {Total_sets}")
+         print(f"2. Total Reps: {Total_reps}")
+         print(f"3. Total Volume: {Total_volume} lbs")
+         print(f"4. Average Weight: {Average_weight:.2f}")
+         print(f"5. Average reps per set: {Average_reps:.2f}")
+
+def Chart():
+         
+
+      
 def main():
    load_data()
    while True:
@@ -266,6 +336,10 @@ def main():
          Suggestions()
       elif Choice == "4":
          Record()
+      elif Choice == "5":
+         Statistics()
+      elif Choice == "6":
+         Chart()
       elif Choice == "7":
          quit = input("Are you sure you want to quit?(0 for no): ")
          if quit == "0":

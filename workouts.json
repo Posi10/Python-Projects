@@ -1,0 +1,25 @@
+[
+    {
+        "Date": "August 27, 2026",
+        "Group": "Chest",
+        "Exercises": [
+            {
+                "Name": "Incline Bench Press",
+                "Sets": [
+                    {
+                        "Weight": 110,
+                        "Reps": 10
+                    },
+                    {
+                        "Weight": 110,
+                        "Reps": 9
+                    },
+                    {
+                        "Weight": 110,
+                        "Reps": 8
+                    }
+                ]
+            }
+        ]
+    }
+]
