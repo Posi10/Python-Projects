@@ -320,9 +320,33 @@ def Statistics():
          print(f"5. Average reps per set: {Average_reps:.2f}")
 
 def Chart():
-         
+   print("\n--- Chart ---")
+   time.sleep(1)
+   print("Here, you can see your workouts by weeks!")
+   time.sleep(2)
+   print("Choose a week by number!")
+   weeks = []
 
-      
+   for workout in workouts:
+      workout_total_volume = 0
+      print()
+      print(f"{workout['Date']} | {workout['Group']}")
+      for exercise in workout["Exercises"]:
+         exercise_volume = 0
+         print(f"  {exercise['Name']}")
+         for i, s in enumerate(exercise["Sets"], start=1):
+            print(f"   Set {i}: {s['Weight']}lbs x {s['Reps']} ")
+            w = s.get("Weight", 0)
+            r = s.get("Reps", 0)
+            exercise_volume += w * r
+            workout_total_volume += w * r
+         time.sleep(2)
+         print(f"Your total volume for this exercise is {exercise_volume}!")
+         print()
+      print(f"Your total volume for this workout is {workout_total_volume}!")
+      weeks.append(workout)
+
+
 def main():
    load_data()
    while True:
@@ -352,32 +376,3 @@ def main():
          print("Invalid option, please pick one of the following.")
 
 main()
-
-
-         
-                    
-        
-                     
-
-
-
-
-    
-
-             
-                 
-            
-
-             
-        
-
-    
-          
-
-           
-   
-
-         
-         
-    
-
