@@ -1,6 +1,7 @@
 import time
 import json
 import difflib
+from datetime import datetime, timedelta
 
 workouts = []
 
@@ -325,26 +326,74 @@ def Chart():
    print("Here, you can see your workouts by weeks!")
    time.sleep(2)
    print("Choose a week by number!")
-   weeks = []
+   # helper to parse common date formats (returns a date object)
+   def parse_date(date_str):
+      for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%Y/%m/%d"):
+         try:
+            return datetime.strptime(date_str, fmt).date()
+         except Exception:
+            continue
+      return None
 
-   for workout in workouts:
-      workout_total_volume = 0
-      print()
-      print(f"{workout['Date']} | {workout['Group']}")
-      for exercise in workout["Exercises"]:
-         exercise_volume = 0
-         print(f"  {exercise['Name']}")
-         for i, s in enumerate(exercise["Sets"], start=1):
-            print(f"   Set {i}: {s['Weight']}lbs x {s['Reps']} ")
+   def workout_volume(workout):
+      total = 0
+      for exercise in workout.get("Exercises", []):
+         for s in exercise.get("Sets", []):
             w = s.get("Weight", 0)
             r = s.get("Reps", 0)
-            exercise_volume += w * r
-            workout_total_volume += w * r
-         time.sleep(2)
-         print(f"Your total volume for this exercise is {exercise_volume}!")
-         print()
-      print(f"Your total volume for this workout is {workout_total_volume}!")
-      weeks.append(workout)
+            total += w * r
+      return total
+
+   # group workouts by week starting Monday (Monday -> Sunday)
+   from collections import defaultdict
+   weeks_map = defaultdict(list)
+   for workout in workouts:
+      ds = parse_date(workout.get("Date", ""))
+      if not ds:
+         # skip entries with unparsable dates
+         continue
+      week_start = ds - timedelta(days=ds.weekday())  # Monday
+      weeks_map[week_start].append(workout)
+
+   if not weeks_map:
+      print("No dated workouts available to chart.")
+      return
+
+   # prepare a sorted list of week starts (most recent first)
+   sorted_weeks = sorted(weeks_map.keys(), reverse=True)
+
+   # display weeks with summary info
+   week_summaries = []
+   for i, ws in enumerate(sorted_weeks, start=1):
+      we = ws + timedelta(days=6)
+      week_workouts = weeks_map[ws]
+      week_total_volume = sum(workout_volume(w) for w in week_workouts)
+      print(f"{i}. {ws} - {we} : {len(week_workouts)} workout(s), {week_total_volume} lbs total volume")
+      week_summaries.append((ws, week_workouts))
+
+   # let user pick a week to see details
+   try:
+      pick = int(input("Pick a week number (0 to cancel): "))
+   except ValueError:
+      print("Invalid input, returning.")
+      return
+   if pick == 0:
+      return
+   if pick < 1 or pick > len(week_summaries):
+      print("Invalid week number.")
+      return
+
+   selected_week_start, selected_workouts = week_summaries[pick - 1]
+   selected_week_end = selected_week_start + timedelta(days=6)
+   print(f"\nWorkouts for {selected_week_start} - {selected_week_end}:\n")
+   for workout in selected_workouts:
+      wvol = workout_volume(workout)
+      print(f"{workout.get('Date','')} | {workout.get('Group','')} - {wvol} lbs")
+      for exercise in workout.get("Exercises", []):
+         print(f"  {exercise.get('Name','')}")
+         for i, s in enumerate(exercise.get('Sets', []), start=1):
+            print(f"   Set {i}: {s.get('Weight',0)}lbs x {s.get('Reps',0)}")
+      print()
 
 
 def main():
@@ -376,3 +425,4 @@ def main():
          print("Invalid option, please pick one of the following.")
 
 main()
+
