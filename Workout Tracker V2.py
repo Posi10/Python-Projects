@@ -35,7 +35,8 @@ def menu():
    print("4. Personal Record")
    print("5. Statistics")
    print("6. Weekly Chart")
-   print("7. Quit")
+   print("7. Manage/Delete Data")
+   print("8. Quit")
 
 
 def choice():
@@ -113,7 +114,107 @@ def History():
          for exercise in workout["Exercises"]:
             print(f"  {exercise['Name']}")
             for i, s in enumerate(exercise["Sets"], start=1):
-               print(f"   Set {i}: {s['Weight']}lbs x {s['Reps']} ")
+                  weight = s.get("Weight", "N/A")
+                  reps = s.get("Reps", "N/A")
+                  print(f"   Set {i}: {weight}lbs x {reps} ")
+
+def Delete():
+      if not workouts:
+         print("No workouts logged, choose option 1 and log a workout!")
+         return
+
+      print("\n---Manage Workouts---")
+      for index, workout in enumerate(workouts, start=1):
+         date = workout.get("Date") or "No date"
+         print(f"{index}. {date} | {workout.get('Group', 'No group')}")
+
+      try:
+         workout_choice = int(input("Choose a workout (0 to quit): "))
+      except ValueError:
+         print("Invalid input, please enter a valid number!")
+         return
+
+      if workout_choice == 0:
+         return
+      if workout_choice < 1 or workout_choice > len(workouts):
+         print("Invalid input, please pick one of the listed workouts!")
+         return
+
+      selected_workout = workouts[workout_choice - 1]
+      print("1. Delete entire workout")
+      print("2. Delete an exercise")
+      print("3. Delete a set")
+      print("4. Delete the workout date")
+      print("5. Delete a set's weight")
+      print("6. Delete a set's reps")
+      print("0. Cancel")
+
+      try:
+         action = int(input("What would you like to delete? "))
+      except ValueError:
+         print("Invalid input, please enter a valid number!")
+         return
+
+      if action == 0:
+         return
+      if action == 1:
+         workouts.pop(workout_choice - 1)
+      elif action == 4:
+         selected_workout.pop("Date", None)
+      elif action in (2, 3, 5, 6):
+         exercises = selected_workout.get("Exercises", [])
+         if not exercises:
+            print("This workout has no exercises.")
+            return
+
+         for index, exercise in enumerate(exercises, start=1):
+            print(f"{index}. {exercise.get('Name', 'Unnamed exercise')}")
+         try:
+            exercise_choice = int(input("Choose an exercise (0 to quit): "))
+         except ValueError:
+            print("Invalid input, please enter a valid number!")
+            return
+         if exercise_choice == 0:
+            return
+         if exercise_choice < 1 or exercise_choice > len(exercises):
+            print("Invalid input, please pick one of the listed exercises!")
+            return
+
+         selected_exercise = exercises[exercise_choice - 1]
+         if action == 2:
+            exercises.pop(exercise_choice - 1)
+         else:
+            sets = selected_exercise.get("Sets", [])
+            if not sets:
+               print("This exercise has no sets.")
+               return
+            for index, set_data in enumerate(sets, start=1):
+               weight = set_data.get("Weight", "N/A")
+               reps = set_data.get("Reps", "N/A")
+               print(f"{index}. {weight}lbs x {reps} reps")
+            try:
+               set_choice = int(input("Choose a set (0 to quit): "))
+            except ValueError:
+               print("Invalid input, please enter a valid number!")
+               return
+            if set_choice == 0:
+               return
+            if set_choice < 1 or set_choice > len(sets):
+               print("Invalid input, please pick one of the listed sets!")
+               return
+
+            if action == 3:
+               sets.pop(set_choice - 1)
+            elif action == 5:
+               sets[set_choice - 1].pop("Weight", None)
+            else:
+               sets[set_choice - 1].pop("Reps", None)
+      else:
+         print("Invalid input, please choose one of the listed actions!")
+         return
+
+      save_data()
+      print("The selected data was deleted.")
       print()
 
 def Suggestions():
@@ -170,8 +271,10 @@ def Suggestions():
 
       Total_reps = 0
       for i, s in enumerate(selected_exercise["Sets"], start=1):
-         print(f"Set {i}: {s['Weight']}lbs x {s['Reps']} reps")
-         Total_reps += s["Reps"]
+         weight = s.get("Weight", "N/A")
+         reps = s.get("Reps", 0)
+         print(f"Set {i}: {weight}lbs x {reps} reps")
+         Total_reps += reps
 
       Average = Total_reps / len(selected_exercise["Sets"])
       if Average >= 12:
@@ -336,14 +439,17 @@ def Chart():
    weeks = {}
 
    for workout in workouts:
-    d = datetime.strptime(workout["Date"], "%B %d, %Y").date()
+      try:
+       d = datetime.strptime(workout["Date"], "%B %d, %Y").date()
+      except (KeyError, TypeError, ValueError):
+       continue
 
-    Monday = d - timedelta(days=d.weekday())
+      Monday = d - timedelta(days=d.weekday())
 
-    if Monday not in weeks:
-        weeks[Monday] = []
+      if Monday not in weeks:
+             weeks[Monday] = []
 
-    weeks[Monday].append(workout)
+      weeks[Monday].append(workout)
 
 
    sorted_weeks = sorted(weeks.keys(), reverse=True)
@@ -362,6 +468,19 @@ def Chart():
       return
    else:
       selected_week = week_summaries[Pick - 1]
+
+      for week in week_summaries:
+         if week == selected_week:
+                  for workout in selected_week[1]:
+                     print(f"{workout['Date']} | {workout['Group']}")
+                     for exercise in workout["Exercises"]:
+                        print(f"  {exercise['Name']}")
+                        for i, s in enumerate(exercise["Sets"], start=1):
+                           weight = s.get("Weight", "N/A")
+                           reps = s.get("Reps", "N/A")
+                           print(f"   Set {i}: {weight}lbs x {reps} ")
+                  print()
+                     
 
 
 
@@ -383,6 +502,8 @@ def main():
       elif Choice == "6":
          Chart()
       elif Choice == "7":
+         Delete()
+      elif Choice == "8":
          quit = input("Are you sure you want to quit?(0 for no): ")
          if quit == "0":
             continue
