@@ -434,7 +434,7 @@ def Statistics():
          time.sleep(3)
 
          for workout in workouts:
-            if Selected_group.strip().casefold() == workout["Group"]:
+            if Selected_group.strip().casefold() == workout["Group"].strip().casefold():
                for exercise in workout["Exercises"]:
                   for set in exercise["Sets"]:
                      # per-set aggregation using safe getters
