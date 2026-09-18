@@ -11,12 +11,20 @@ def load_data():
     time.sleep(2)
     try:
         with open("workouts.json", "r") as file:
-            workouts = json.load(file)
+            data = json.load(file)
+        if not isinstance(data, list):
+           print("Invalid data format. Starting fresh.")
+           workouts = []
+        else:
+           workouts = data
     except FileNotFoundError:
         print("Welcome to Workout Tracker!")
         time.sleep(2)
         print("To start, pick option 1 and log a workout!")
         time.sleep(1)
+    except json.JSONDecodeError:
+       print("Workout data could not be read. Starting with an empty workout list.")
+       workouts = []
 
 def save_data():
    print("Saving data...")
@@ -49,8 +57,17 @@ def Create():
    time.sleep(2)
    print("If you ever want to quit, just press 0!")
 
-   Date = input("Date: ")
-   if Date == "0": return
+   while True:
+    Date = input("Date (Month DD, YYYY): ")
+
+    if Date == "0":
+        return
+
+    try:
+        datetime.strptime(Date, "%B %d, %Y")
+        break
+    except ValueError:
+        print("Invalid date. Please use the format: Month DD, YYYY")
 
    Group = input("Muscle Group: ")
    if Group == "0": return
@@ -70,28 +87,39 @@ def Create():
          "Sets": []
       }
 
-      try:
-         Set_count = int(input("Sets: "))
-         if Set_count == 0: return
-      except ValueError:
-         print("Invalid input, please enter a valid number!")
-         continue
-      for i in range (1, Set_count +1):
-         print(f"Set {i}: ")
+      while True:
          try:
-          Weight = int(input("Weight: "))
-          if Weight == 0: return
-
-          Reps = int(input("Reps: "))
-          if Reps == 0: return
+            Set_count = int(input("Sets: "))
+            if Set_count <= 0:
+               print("Please enter at least one set.")
+               continue
+            break
          except ValueError:
-          print("Invalid input, please enter a valid number!")
-          continue
+            print("Invalid input, please enter a valid number!")
+
+      for i in range(1, Set_count + 1):
+         print(f"Set {i}: ")
+         while True:
+            try:
+               Weight = int(input("Weight: "))
+               if Weight <= 0:
+                  print("Weight must be greater than 0.")
+                  continue
+
+               Reps = int(input("Reps: "))
+               if Reps <= 0:
+                  print("Reps must be greater than 0.")
+                  continue
+               break
+            except ValueError:
+               print("Invalid input, please enter a valid number!")
+
          Set = {
             "Weight": Weight,
             "Reps": Reps
          }
          Exercise["Sets"].append(Set)
+
       current_workout["Exercises"].append(Exercise)
       quit = input("Do you want to add more exercises?(0 for no, any key for yes): ")
       if quit == "0":
@@ -100,8 +128,9 @@ def Create():
             workouts.append(current_workout)
             save_data()
             return
-      else:
-         continue
+      
+      
+      continue
 
 
 def History():
@@ -316,7 +345,7 @@ def Record():
          continue
 
       if len(matches) == 1:
-         selected_exercise_name = matches[0].title()
+         selected_exercise_name = matches[0]
          print(f"Analyzing {selected_exercise_name}...")
          time.sleep(2)
       else:
@@ -330,7 +359,7 @@ def Record():
              if Pick < 1 or Pick > len(matches):
                  print("Invalid input, please pick one of the following options.")
                  continue
-             selected_exercise_name = matches[Pick - 1].title()
+             selected_exercise_name = matches[Pick - 1]
          except ValueError:
              print("Invalid input, please enter a valid number!")
              continue
@@ -359,13 +388,23 @@ def Record():
 def Statistics():
    if len(workouts) == 0:
       print("No workouts logged. Choose option 1 to log a workout")
+      return
    else:
+    groups = set()
+
     while True:
       Muscles = []
       for workout in workouts:
          name = workout.get("Group", "")
          if name:
-            Muscles.append(name)
+            groups.add(name)
+
+      muscles = sorted(groups)
+
+      if not muscles:
+         print("No valid muscle groups found.")
+         return
+         
       
       for index, muscle in enumerate(Muscles, start=1):
          print(f"{index}. {muscle} group")
@@ -381,7 +420,7 @@ def Statistics():
 
       
       else:
-         Selected_group = Muscles[Pick - 1]
+         Selected_group = muscles[Pick - 1]
          print(f"You picked {Selected_group}")
 
          Total_sets = 0
@@ -395,7 +434,7 @@ def Statistics():
          time.sleep(3)
 
          for workout in workouts:
-            if Selected_group.title().strip() == workout["Group"]:
+            if Selected_group.strip().casefold() == workout["Group"]:
                for exercise in workout["Exercises"]:
                   for set in exercise["Sets"]:
                      # per-set aggregation using safe getters
@@ -462,10 +501,16 @@ def Chart():
       week_total_volume = sum(workout_volume(w) for w in week_workouts)
       print(f"{i}. {monday} - {Sunday} : {len(week_workouts)} workout(s), {week_total_volume} lbs total volume")
       week_summaries.append((monday, week_workouts)) 
-   Pick = int(input("Pick a week by number: "))
+   try:
+    Pick = int(input("Pick a week by number: "))
+   except ValueError:
+      print("Invalid input, please pick a valid number")
+      return
 
    if Pick == 0:
       return
+   if Pick < 1 or Pick > len(week_summaries):
+      print("Please pick one of the following options")
    else:
       selected_week = week_summaries[Pick - 1]
 
