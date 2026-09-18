@@ -406,12 +406,12 @@ def Statistics():
          return
          
       
-      for index, muscle in enumerate(Muscles, start=1):
+      for index, muscle in enumerate(muscles, start=1):
          print(f"{index}. {muscle} group")
       try: 
        Pick = int(input("Pick an option: "))
 
-       if Pick < 1 or Pick > len(Muscles):
+       if Pick < 1 or Pick > len(muscles):
          print("Invalid input, please pick one of the following options.")
          continue
       except ValueError:
